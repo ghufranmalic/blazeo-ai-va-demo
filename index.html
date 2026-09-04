@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chatbot vs Virtual Assistant Demo | Blazeo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blazeo-purple: #3c2884;
+      --blazeo-purple-light: #5841ad;
+      --blazeo-orange: #f26522;
+      --blazeo-dark: #181c39;
+      --blazeo-gray: #5a5f7a;
+      --blazeo-muted: #7a8099;
+      --blazeo-bg: #f7f6fb;
+      --blazeo-white: #ffffff;
+      --border: #e8e6f0;
+      --border-soft: rgba(60, 40, 132, 0.12);
+      --surface: rgba(255, 255, 255, 0.85);
+      --shadow: 0 8px 32px rgba(60, 40, 132, 0.08);
+      --shadow-hover: 0 16px 48px rgba(60, 40, 132, 0.12);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, Roboto, Arial, sans-serif;
+      color: var(--blazeo-dark);
+      background: var(--blazeo-white);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(60, 40, 132, 0.07), transparent 55%),
+        radial-gradient(ellipse 35% 25% at 0% 55%, rgba(88, 65, 173, 0.05), transparent 50%),
+        radial-gradient(ellipse 30% 20% at 100% 65%, rgba(242, 101, 34, 0.04), transparent 50%),
+        linear-gradient(180deg, #ffffff 0%, #f9f8fc 50%, #f7f6fb 100%);
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(60, 40, 132, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60, 40, 132, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 55% at 50% 25%, black 15%, transparent 72%);
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      padding: 18px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.88);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo img {
+      height: 34px;
+      width: auto;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--blazeo-purple);
+      background: rgba(60, 40, 132, 0.08);
+      border: 1px solid var(--border-soft);
+      padding: 7px 14px;
+      border-radius: 999px;
+    }
+
+    .header-badge::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blazeo-orange);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.85); }
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 56px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blazeo-purple-light);
+      margin-bottom: 20px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: rgba(60, 40, 132, 0.06);
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-size: clamp(36px, 5.5vw, 56px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      color: var(--blazeo-dark);
+    }
+
+    .hero h1 .accent {
+      color: var(--blazeo-purple);
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--blazeo-gray);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .hero-vs {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 28px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blazeo-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-vs span {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--blazeo-white);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-vs .divider {
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blazeo-purple-light), transparent);
+      padding: 0;
+      border: none;
+    }
+
+    /* Demo grid */
+    .demo-section {
+      padding: 0 24px 88px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 580px));
+      justify-content: center;
+      align-items: start;
+      gap: 28px;
+    }
+
+    .demo-card {
+      position: relative;
+      background: var(--blazeo-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blazeo-purple), var(--blazeo-purple-light));
+      opacity: 0.9;
+    }
+
+    .demo-card.va::before {
+      background: linear-gradient(90deg, var(--blazeo-purple-light), var(--blazeo-orange));
+    }
+
+    .demo-card:hover {
+      border-color: var(--border-soft);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .demo-card.ai { --card-accent: var(--blazeo-purple); }
+    .demo-card.va { --card-accent: var(--blazeo-purple-light); }
+
+    .demo-card-header {
+      padding: 28px 28px 0;
+    }
+
+    .demo-card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      border: 1px solid;
+    }
+
+    .demo-card.ai .demo-card-tag {
+      color: var(--blazeo-purple);
+      background: rgba(60, 40, 132, 0.08);
+      border-color: var(--border-soft);
+    }
+
+    .demo-card.va .demo-card-tag {
+      color: var(--blazeo-purple-light);
+      background: rgba(88, 65, 173, 0.08);
+      border-color: rgba(88, 65, 173, 0.15);
+    }
+
+    .demo-card-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .demo-card h2 {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: var(--blazeo-dark);
+    }
+
+    .demo-card .subtitle {
+      font-size: 14px;
+      color: var(--blazeo-gray);
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    .info-block {
+      padding: 0 28px 22px;
+      min-height: 530px;
+    }
+
+    .info-block > p {
+      font-size: 14px;
+      color: var(--blazeo-gray);
+      margin-bottom: 18px;
+      line-height: 1.65;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--blazeo-bg);
+      border: 1px solid var(--border);
+    }
+
+    .info-panels {
+      display: grid;
+      gap: 12px;
+    }
+
+    .info-panel {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--blazeo-bg);
+      border: 1px solid var(--border);
+    }
+
+    .info-block h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--card-accent, var(--blazeo-purple));
+      margin-bottom: 10px;
+    }
+
+    .info-block ul {
+      list-style: none;
+    }
+
+    .info-block li {
+      font-size: 13px;
+      color: var(--blazeo-dark);
+      padding: 5px 0 5px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .info-block li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--card-accent, var(--blazeo-purple));
+    }
+
+    /* Chat widget area */
+    .widget-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--blazeo-white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .widget-toolbar span {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--blazeo-muted);
+    }
+
+    .btn-start-over {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--blazeo-orange);
+      background: rgba(242, 101, 34, 0.08);
+      border: 1px solid rgba(242, 101, 34, 0.3);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .btn-start-over:hover {
+      background: rgba(242, 101, 34, 0.15);
+      border-color: rgba(242, 101, 34, 0.5);
+      box-shadow: 0 4px 16px rgba(242, 101, 34, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-start-over:active {
+      transform: translateY(0);
+    }
+
+    .btn-start-over svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .widget-frame-wrap {
+      position: relative;
+      flex: 1;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(60, 40, 132, 0.04), transparent),
+        #eceaf3;
+      overflow: visible;
+      display: flex;
+      justify-content: stretch;
+      align-items: flex-start;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .widget-frame-scaler {
+      width: 100%;
+      max-width: none;
+      height: 700px;
+      overflow: visible;
+      position: relative;
+      flex: 1;
+    }
+
+    .widget-frame {
+      width: 100%;
+      height: 700px;
+      border: none;
+      display: block;
+      transform-origin: top left;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .widget-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(247, 246, 251, 0.92);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--blazeo-gray);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(4px);
+    }
+
+    .widget-loading.visible {
+      opacity: 1;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 36px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--blazeo-bg);
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: var(--blazeo-gray);
+    }
+
+    .footer a {
+      color: var(--blazeo-purple);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .footer a:hover {
+      color: var(--blazeo-purple-light);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .widget-frame-scaler {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .header {
+        padding: 14px 20px;
+      }
+
+      .hero {
+        padding: 48px 20px 36px;
+      }
+
+      .hero-vs {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-scene" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="page-wrap">
+    <header class="header">
+      <div class="header-inner">
+        <a class="logo" href="https://www.blazeo.com/" target="_blank" rel="noopener">
+          <img src="https://www.blazeo.com/wp-content/uploads/2024/05/logo-blazeo.svg" alt="Blazeo" />
+        </a>
+        <span class="header-badge">Live Demo</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <span class="hero-label">Compare Chat Experiences</span>
+      <h1>AI Chatbot <span class="accent">vs</span> Virtual Assistant</h1>
+      <p>
+        Try both Blazeo chat experiences side by side. Interact with each widget below to see how
+        conversational AI and structured virtual assistant flows differ in real time.
+      </p>
+      <div class="hero-vs">
+        <span>Conversational AI</span>
+        <span class="divider" aria-hidden="true"></span>
+        <span>Structured Intake</span>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <div class="demo-grid">
+        <!-- AI Chatbot -->
+        <article class="demo-card ai">
+          <div class="demo-card-header">
+            <span class="demo-card-tag">AI Chatbot</span>
+            <h2>Conversational Engagement</h2>
+            <p class="subtitle">Contextual legal guidance with empathetic, free-form responses</p>
+          </div>
+
+          <div class="info-block">
+            <p>
+              AI Chatbot handles free-form visitor messages, acknowledges specific details, provides
+              general legal guidance, and then transitions into lead capture, helping visitors feel
+              heard before they share contact information.
+            </p>
+
+            <div class="info-panels">
+              <div class="info-panel">
+                <h3>Why it fits</h3>
+                <ul>
+                  <li>Understands complex, free-form visitor messages</li>
+                  <li>Provides empathetic, context-aware responses</li>
+                  <li>Offers general legal information before intake</li>
+                  <li>Delivers better-qualified, engaged leads</li>
+                </ul>
+              </div>
+
+              <div class="info-panel">
+                <h3>Best for</h3>
+                <ul>
+                  <li>Visitors who describe accidents, arrests, and family situations in detail</li>
+                  <li>Firms wanting to demonstrate expertise in chat</li>
+                  <li>Scenarios like bench warrants, probation issues, or unusual injury claims</li>
+                  <li>A consultative tone: "I am sorry to hear…" then guide next steps</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="widget-toolbar">
+            <span>AI Chatbot</span>
+            <button class="btn-start-over" data-target="ai" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Start Over
+            </button>
+          </div>
+
+          <div class="widget-frame-wrap">
+            <div class="widget-loading" id="ai-loading">Restarting chat…</div>
+            <div class="widget-frame-scaler" data-widget="ai">
+              <iframe
+                id="ai-widget"
+                class="widget-frame"
+                src="widgets/ai.html"
+                title="AI Chatbot Demo"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </article>
+
+        <!-- Virtual Assistant -->
+        <article class="demo-card va">
+          <div class="demo-card-header">
+            <span class="demo-card-tag">Virtual Assistant</span>
+            <h2>Structured Intake Flow</h2>
+            <p class="subtitle">Fast, predictable lead capture with mapped questions</p>
+          </div>
+
+          <div class="info-block">
+            <p>
+              Virtual Assistant (VA) is built for firms that want a fast, predictable intake flow. It
+              asks mapped questions, collects contact details, and moves visitors to the next step,
+              without answering legal questions or handling free-form narratives.
+            </p>
+
+            <div class="info-panels">
+              <div class="info-panel">
+                <h3>Why it fits</h3>
+                <ul>
+                  <li>Fast lead capture with minimal friction</li>
+                  <li>Consistent, controlled conversation paths</li>
+                  <li>Easy to map practice areas and office locations</li>
+                  <li>Predictable visitor experience every time</li>
+                </ul>
+              </div>
+
+              <div class="info-panel">
+                <h3>Best for</h3>
+                <ul>
+                  <li>Firms focused on lead volume</li>
+                  <li>Visitors who prefer buttons and short answers</li>
+                  <li>Straightforward intake: name, case type, contact info</li>
+                  <li>Teams that want the bot to qualify, not advise</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="widget-toolbar">
+            <span>Virtual Assistant</span>
+            <button class="btn-start-over" data-target="va" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Start Over
+            </button>
+          </div>
+
+          <div class="widget-frame-wrap">
+            <div class="widget-loading" id="va-loading">Restarting chat…</div>
+            <div class="widget-frame-scaler" data-widget="va">
+              <iframe
+                id="va-widget"
+                class="widget-frame"
+                src="widgets/va.html"
+                title="Virtual Assistant Demo"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Powered by <a href="https://www.blazeo.com/managed-live-chat/" target="_blank" rel="noopener">Blazeo Managed Live Chat</a>
+        - AI Chatbots + Human Agents. All Digital Channels.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var WIDGET_HEIGHT = 700;
+
+      var WIDGETS = {
+        ai: {
+          iframe: document.getElementById('ai-widget'),
+          loading: document.getElementById('ai-loading'),
+          scaler: document.querySelector('[data-widget="ai"]'),
+          src: 'widgets/ai.html'
+        },
+        va: {
+          iframe: document.getElementById('va-widget'),
+          loading: document.getElementById('va-loading'),
+          scaler: document.querySelector('[data-widget="va"]'),
+          src: 'widgets/va.html'
+        }
+      };
+
+      function scaleWidgets() {
+        Object.keys(WIDGETS).forEach(function (key) {
+          var widget = WIDGETS[key];
+          var scaler = widget.scaler;
+          var iframe = widget.iframe;
+          if (!scaler || !iframe) return;
+
+          var availableWidth = scaler.clientWidth;
+          if (!availableWidth) return;
+
+          iframe.style.width = availableWidth + 'px';
+          scaler.style.height = WIDGET_HEIGHT + 'px';
+          scaler.parentElement.style.minHeight = WIDGET_HEIGHT + 'px';
+
+          try {
+            var doc = iframe.contentDocument;
+            if (doc && doc.documentElement) {
+              doc.documentElement.style.width = availableWidth + 'px';
+              doc.documentElement.style.minWidth = availableWidth + 'px';
+              doc.body.style.width = availableWidth + 'px';
+              doc.body.style.minWidth = availableWidth + 'px';
+            }
+          } catch (e) {}
+
+          iframe.style.transform = 'none';
+
+          try {
+            iframe.contentWindow.postMessage({ type: 'blazeo-layout-resize' }, '*');
+          } catch (e) {}
+        });
+      }
+
+      var COOKIE_NAMES = [
+        'livechat_visitor_history', 'livechat_chat_in_progress', 'livechat_visitorinfo_in_progress',
+        'livechat_visitor_id', 'livechat_agent_alias_id', 'livechat_operator_id', 'livechat_profile_id',
+        'livechat_chat_id', 'livechat_server_chatid', 'livechat_chat_state', 'livechat_chat_sound_enabled',
+        'livechat_transfer_live_agent', 'livechat_prechat_message_ids', 'livechat_prechat_mapped_question',
+        'livechat_prechat_message_sent', 'livechat_invitation_traffic_sources', 'livechat_web_sms_number',
+        'livechat_is_page_refreshed', 'livechat_v3_invitation_shown', 'livechat_prechat_messagecounter',
+        'livechat_prechat_lastmessage', 'livechat_prechat_msg_array', 'livechat_prechat_messages_store',
+        'livechat_pokemessages_lastJoinBackTime', 'livechat_original_referrer', 'livechat_continue_mapping_applied',
+        'livechat_input_old_value', 'subsequent_greeting_flag', 'livechat_show_operator_not_found_overlay',
+        'transfer_chat_succeed', 'user_reacts_on_loc_disclaimer', 'livechat_visitor_phone',
+        'livechat_visitor_name', 'apexchat_live_contactInfo', 'livechat_dom_auto_launched',
+        'apexchat_chat_id', 'livechat_tracker_id', 'livechat_invitation_closed', 'livechat_invitation_shown',
+        'livechat_exitpopup_in_progress', 'livechat_exitpopup_has_displayed', 'livechat_has_windowed_chat_started',
+        'livechat_exitpopup_is_closed', 'livechat_exitpopup_predefined_msg_sent', 'livechat_exitpopup_is_active',
+        'livechat_exitpopup_isMinimized', 'livechat_ep_sound_enabled', 'livechat_chat_in_progress'
+      ];
+
+      function clearChatStorage() {
+        COOKIE_NAMES.forEach(function (name) {
+          document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+          document.cookie = 'apexchat_' + name.replace(/^livechat_/, '') + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        });
+
+        try {
+          var keys = [];
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key && (key.indexOf('livechat') !== -1 || key.indexOf('apexchat') !== -1)) {
+              keys.push(key);
+            }
+          }
+          keys.forEach(function (k) { localStorage.removeItem(k); });
+        } catch (e) {}
+
+        try {
+          var sKeys = [];
+          for (var j = 0; j < sessionStorage.length; j++) {
+            var sKey = sessionStorage.key(j);
+            if (sKey && (sKey.indexOf('livechat') !== -1 || sKey.indexOf('apexchat') !== -1)) {
+              sKeys.push(sKey);
+            }
+          }
+          sKeys.forEach(function (k) { sessionStorage.removeItem(k); });
+        } catch (e) {}
+      }
+
+      function startOver(target) {
+        var widget = WIDGETS[target];
+        if (!widget) return;
+
+        widget.loading.classList.add('visible');
+
+        clearChatStorage();
+
+        try {
+          widget.iframe.contentWindow.postMessage({ type: 'blazeo-chat-reset' }, '*');
+        } catch (e) {}
+
+        widget.iframe.src = widget.src + '?reset=' + Date.now();
+      }
+
+      document.querySelectorAll('.btn-start-over').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          startOver(btn.getAttribute('data-target'));
+        });
+      });
+
+      Object.keys(WIDGETS).forEach(function (key) {
+        var widget = WIDGETS[key];
+        widget.iframe.addEventListener('load', function () {
+          widget.loading.classList.remove('visible');
+          scaleWidgets();
+        });
+      });
+
+      scaleWidgets();
+      window.addEventListener('resize', scaleWidgets);
+      equalizeInfoBlocks();
+      window.addEventListener('resize', equalizeInfoBlocks);
+
+      function equalizeInfoBlocks() {
+        var blocks = document.querySelectorAll('.info-block');
+        if (!blocks.length) return;
+
+        blocks.forEach(function (block) {
+          block.style.minHeight = '';
+        });
+
+        var maxHeight = 0;
+        blocks.forEach(function (block) {
+          maxHeight = Math.max(maxHeight, block.offsetHeight);
+        });
+
+        blocks.forEach(function (block) {
+          block.style.minHeight = maxHeight + 'px';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

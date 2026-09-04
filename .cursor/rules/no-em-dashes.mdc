@@ -1,0 +1,15 @@
+---
+description: Do not use em dashes in project copy or comments
+alwaysApply: true
+---
+
+# No em dashes
+
+Do not use em dashes (`—`) anywhere in this project.
+
+Use a hyphen (`-`) or comma (`,`) instead, depending on context:
+
+- **Hyphen**: for breaks or asides (e.g. `next step - without answering`)
+- **Comma**: for continuing a clause (e.g. `lead capture, helping visitors feel heard`)
+
+Apply this to HTML copy, comments, README text, and any other project content.
