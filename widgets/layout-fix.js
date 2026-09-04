@@ -2,13 +2,53 @@
  * Layout helpers for embedded ApexChat widgets.
  * - Full chat window: fixed size and bottom anchoring inside the iframe.
  * - Popup invitations: horizontal alignment only (never touch vertical positioning).
- * - CHAT NOW tab: never modified (ApexChat rotates it with CSS transform).
+ * - CHAT NOW tab: only nudged on narrow screens, transform is never cleared.
  */
 (function () {
-  var CHAT_WIDTH = 492;
-  var CHAT_HEIGHT = 620;
-  var CHAT_LEFT = '64px';
+  var DESKTOP_CHAT_WIDTH = 492;
+  var DESKTOP_CHAT_WIDTH_WIDE = 540;
+  var WIDE_CONTAINER_BREAKPOINT = 600;
+  var DESKTOP_CHAT_HEIGHT = 620;
+  var DESKTOP_CHAT_LEFT = 64;
+  var TAB_WIDTH = 52;
+  var MOBILE_SIDE_PADDING = 8;
+  var DESKTOP_BREAKPOINT = 560;
   var BORDER_RADIUS = '12px';
+  var containerWidth = document.body.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+  var containerHeight = document.body.clientHeight || window.innerHeight;
+
+  function getChatHeight() {
+    var bottomPad = 10;
+    var tallMax = Math.min(760, Math.floor(containerHeight * 0.95));
+    return Math.max(320, Math.min(tallMax, containerHeight - bottomPad));
+  }
+
+  function getLayoutMetrics() {
+    var width = containerWidth;
+
+    if (width >= DESKTOP_BREAKPOINT) {
+      var sideSpace = DESKTOP_CHAT_LEFT + 12;
+      var chatWidth = width >= WIDE_CONTAINER_BREAKPOINT
+        ? Math.min(DESKTOP_CHAT_WIDTH_WIDE, width - sideSpace)
+        : DESKTOP_CHAT_WIDTH;
+
+      return {
+        chatLeft: DESKTOP_CHAT_LEFT,
+        chatWidth: Math.max(DESKTOP_CHAT_WIDTH, chatWidth)
+      };
+    }
+
+    var chatLeft = MOBILE_SIDE_PADDING + TAB_WIDTH;
+    var chatWidth = Math.min(
+      DESKTOP_CHAT_WIDTH,
+      width - chatLeft - MOBILE_SIDE_PADDING
+    );
+
+    return {
+      chatLeft: chatLeft,
+      chatWidth: Math.max(260, chatWidth)
+    };
+  }
 
   function applyStyles(el, styles) {
     if (!el) return;
@@ -68,51 +108,53 @@
     }
   }
 
-  function alignPopupHorizontally(wrapper, frame) {
+  function alignPopupHorizontally(wrapper, frame, metrics) {
     if (!isVisible(wrapper)) return;
 
     applyStyles(wrapper, {
       right: 'auto',
-      left: CHAT_LEFT,
-      width: CHAT_WIDTH + 'px',
-      'max-width': CHAT_WIDTH + 'px',
+      left: metrics.chatLeft + 'px',
+      width: metrics.chatWidth + 'px',
+      'max-width': metrics.chatWidth + 'px',
       'border-radius': BORDER_RADIUS
     });
 
     if (frame) {
       applyStyles(frame, {
-        width: CHAT_WIDTH + 'px',
-        'max-width': CHAT_WIDTH + 'px',
+        width: metrics.chatWidth + 'px',
+        'max-width': metrics.chatWidth + 'px',
         'border-radius': BORDER_RADIUS
       });
       styleInnerFrame(frame);
     }
   }
 
-  function alignChatWindow(wrapper, frame) {
+  function alignChatWindow(wrapper, frame, metrics) {
     if (!isVisible(wrapper)) return;
+
+    var chatHeight = getChatHeight();
 
     applyStyles(wrapper, {
       position: 'fixed',
       right: 'auto',
-      left: CHAT_LEFT,
+      left: metrics.chatLeft + 'px',
       top: 'auto',
       bottom: '10px',
       transform: 'none',
-      width: CHAT_WIDTH + 'px',
-      'max-width': CHAT_WIDTH + 'px',
-      height: CHAT_HEIGHT + 'px',
-      'min-height': CHAT_HEIGHT + 'px',
+      width: metrics.chatWidth + 'px',
+      'max-width': metrics.chatWidth + 'px',
+      height: chatHeight + 'px',
+      'min-height': chatHeight + 'px',
       'border-radius': BORDER_RADIUS,
       overflow: 'hidden'
     });
 
     if (frame) {
       applyStyles(frame, {
-        width: CHAT_WIDTH + 'px',
-        'max-width': CHAT_WIDTH + 'px',
-        height: CHAT_HEIGHT + 'px',
-        'max-height': CHAT_HEIGHT + 'px',
+        width: metrics.chatWidth + 'px',
+        'max-width': metrics.chatWidth + 'px',
+        height: chatHeight + 'px',
+        'max-height': chatHeight + 'px',
         'border-radius': BORDER_RADIUS,
         overflow: 'hidden'
       });
@@ -120,23 +162,54 @@
     }
   }
 
+  function syncContainerWidth() {
+    var measuredWidth = document.body.clientWidth || document.documentElement.clientWidth;
+    var measuredHeight = document.body.clientHeight || window.innerHeight;
+    if (measuredWidth > 0) {
+      containerWidth = measuredWidth;
+    }
+    if (measuredHeight > 0) {
+      containerHeight = measuredHeight;
+    }
+  }
+
+  function alignTabOnMobile(metrics) {
+    if (containerWidth >= DESKTOP_BREAKPOINT) return;
+
+    var tabWrapper = document.getElementById('apexchat_tab_invitation_wrapper');
+    if (!isVisible(tabWrapper)) return;
+
+    applyStyles(tabWrapper, {
+      left: MOBILE_SIDE_PADDING + 'px',
+      right: 'auto'
+    });
+  }
+
   function fixChatLayout() {
+    syncContainerWidth();
     injectGlobalStyles();
+
+    var metrics = getLayoutMetrics();
 
     alignPopupHorizontally(
       document.getElementById('apexchat_popup_message_invitation_wrapper'),
-      document.getElementById('apexchat_popup_message_invitation_frame')
+      document.getElementById('apexchat_popup_message_invitation_frame'),
+      metrics
     );
 
     alignPopupHorizontally(
       document.getElementById('apexchat_prechat_invitation_wrapper'),
-      document.getElementById('apexchat_prechat_invitation_frame')
+      document.getElementById('apexchat_prechat_invitation_frame'),
+      metrics
     );
 
     alignChatWindow(
       document.getElementById('apexchat_dompopup_chatwindow_wrapper'),
-      document.getElementById('apexchat_dompopup_chatwindow_frame')
+      document.getElementById('apexchat_dompopup_chatwindow_frame'),
+      metrics
     );
+
+    alignTabOnMobile(metrics);
   }
 
   fixChatLayout();
@@ -152,6 +225,12 @@
   window.addEventListener('resize', fixChatLayout);
   window.addEventListener('message', function (event) {
     if (event.data && event.data.type === 'blazeo-layout-resize') {
+      if (event.data.width) {
+        containerWidth = event.data.width;
+      }
+      if (event.data.height) {
+        containerHeight = event.data.height;
+      }
       fixChatLayout();
     }
   });

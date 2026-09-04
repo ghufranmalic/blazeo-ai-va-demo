@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Chatbot vs Virtual Assistant Demo | Blazeo</title>
+  <link rel="icon" href="favicon/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/favicon-192x192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -38,7 +42,12 @@
       background: var(--blazeo-white);
       line-height: 1.6;
       min-height: 100vh;
-      overflow-x: hidden;
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
     }
 
     .bg-scene {
@@ -58,21 +67,27 @@
       inset: 0;
       z-index: 0;
       pointer-events: none;
+      display: flex;
+      justify-content: center;
+      mask-image: radial-gradient(ellipse 70% 55% at 50% 25%, black 15%, transparent 72%);
+    }
+
+    .bg-grid-align {
+      width: 100%;
+      max-width: 1360px;
+      height: 100%;
+      padding: 0 24px;
+      box-sizing: border-box;
       background-image:
         linear-gradient(rgba(60, 40, 132, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(60, 40, 132, 0.04) 1px, transparent 1px);
       background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 70% 55% at 50% 25%, black 15%, transparent 72%);
-    }
-
-    .page-wrap {
-      position: relative;
-      z-index: 1;
+      background-position: 680px 0;
     }
 
     /* Header */
     .header {
-      padding: 18px 32px;
+      padding: 18px 0;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -83,11 +98,31 @@
     }
 
     .header-inner {
-      max-width: 1240px;
+      max-width: 1360px;
       margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 640px));
+      gap: 32px;
+      justify-content: center;
+    }
+
+    .header-column {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .header-column.logo-column {
+      grid-column: 1;
+      justify-content: flex-start;
+      padding-left: 20px;
+    }
+
+    .header-column.badge-column {
+      grid-column: 2;
+      justify-content: flex-end;
+      padding-right: 20px;
     }
 
     .logo img {
@@ -127,7 +162,7 @@
     /* Hero */
     .hero {
       text-align: center;
-      padding: 72px 24px 56px;
+      padding: 48px 24px 32px;
       max-width: 920px;
       margin: 0 auto;
     }
@@ -200,17 +235,19 @@
 
     /* Demo grid */
     .demo-section {
-      padding: 0 24px 88px;
-      max-width: 1240px;
+      padding: 0 24px 48px;
+      max-width: 1360px;
       margin: 0 auto;
+      overflow: visible;
     }
 
     .demo-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 580px));
+      grid-template-columns: repeat(2, minmax(0, 640px));
       justify-content: center;
       align-items: start;
-      gap: 28px;
+      gap: 32px;
+      overflow: visible;
     }
 
     .demo-card {
@@ -218,11 +255,11 @@
       background: var(--blazeo-white);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      overflow: visible;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow);
-      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     .demo-card::before {
@@ -243,7 +280,6 @@
     .demo-card:hover {
       border-color: var(--border-soft);
       box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
     }
 
     .demo-card.ai { --card-accent: var(--blazeo-purple); }
@@ -305,7 +341,7 @@
 
     .info-block {
       padding: 0 28px 22px;
-      min-height: 530px;
+      min-height: 380px;
     }
 
     .info-block > p {
@@ -364,6 +400,49 @@
     }
 
     /* Chat widget area */
+    .widget-stage-spacer {
+      display: none;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .widget-stage {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      align-self: flex-start;
+      flex-shrink: 0;
+      background: var(--blazeo-white);
+      overflow: visible;
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+    }
+
+    .widget-stage.is-stuck {
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - var(--header-height, 70px));
+      overflow: visible;
+      box-shadow: 0 -12px 32px rgba(60, 40, 132, 0.08), 0 8px 32px rgba(60, 40, 132, 0.06);
+    }
+
+    .widget-stage.is-stuck .widget-frame-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+    }
+
+    .widget-stage.is-stuck .widget-frame-scaler {
+      flex: 1;
+      min-height: 0;
+      height: auto;
+    }
+
     .widget-toolbar {
       display: flex;
       align-items: center;
@@ -372,14 +451,29 @@
       background: var(--blazeo-white);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
     }
 
-    .widget-toolbar span {
+    .widget-toolbar-label {
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--blazeo-muted);
+      color: var(--blazeo-purple);
+    }
+
+    .widget-toolbar-label-stuck {
+      display: none;
+      margin-bottom: 0;
+    }
+
+    .widget-stage.is-stuck .widget-toolbar-label-default {
+      display: none;
+    }
+
+    .widget-stage.is-stuck .widget-toolbar-label-stuck {
+      display: inline-flex;
     }
 
     .btn-start-over {
@@ -414,6 +508,51 @@
       height: 14px;
     }
 
+    .start-over-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .start-over-tooltip {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      bottom: auto;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--blazeo-white);
+      background: var(--blazeo-dark);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(24, 28, 57, 0.18);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      z-index: 30;
+    }
+
+    .start-over-tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      top: auto;
+      right: 18px;
+      border: 6px solid transparent;
+      border-bottom-color: var(--blazeo-dark);
+    }
+
+    .start-over-wrap:hover .start-over-tooltip,
+    .start-over-wrap:focus-within .start-over-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     .widget-frame-wrap {
       position: relative;
       flex: 1;
@@ -432,7 +571,7 @@
     .widget-frame-scaler {
       width: 100%;
       max-width: none;
-      height: 700px;
+      height: var(--widget-height, 700px);
       overflow: visible;
       position: relative;
       flex: 1;
@@ -440,7 +579,7 @@
 
     .widget-frame {
       width: 100%;
-      height: 700px;
+      height: var(--widget-height, 700px);
       border: none;
       display: block;
       transform-origin: top left;
@@ -470,34 +609,48 @@
       opacity: 1;
     }
 
-    /* Footer */
-    .footer {
-      text-align: center;
-      padding: 36px 24px;
-      border-top: 1px solid var(--border);
-      background: var(--blazeo-bg);
-    }
-
-    .footer p {
-      font-size: 13px;
-      color: var(--blazeo-gray);
-    }
-
-    .footer a {
-      color: var(--blazeo-purple);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .footer a:hover {
-      color: var(--blazeo-purple-light);
-    }
-
     /* Responsive */
     @media (max-width: 1200px) {
       .demo-grid {
         grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .header-column.logo-column,
+      .header-column.badge-column {
+        grid-column: 1;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .header-column.badge-column {
+        justify-content: flex-end;
+      }
+
+      .widget-stage.is-stuck {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        display: block;
+        box-shadow: none;
+      }
+
+      .widget-stage-spacer {
+        display: none !important;
+        height: 0 !important;
+      }
+
+      .widget-stage.is-stuck .widget-toolbar-label-default {
+        display: inline;
+      }
+
+      .widget-stage.is-stuck .widget-toolbar-label-stuck {
+        display: none;
       }
 
       .widget-frame-scaler {
@@ -505,9 +658,25 @@
       }
     }
 
+    @media (max-width: 520px) {
+      .widget-frame-wrap {
+        overflow: hidden;
+      }
+
+      .widget-frame-scaler {
+        overflow: hidden;
+      }
+    }
+
     @media (max-width: 960px) {
       .header {
-        padding: 14px 20px;
+        padding: 14px 0;
+      }
+
+      .header-inner,
+      .demo-section {
+        padding-left: 20px;
+        padding-right: 20px;
       }
 
       .hero {
@@ -523,15 +692,21 @@
 </head>
 <body>
   <div class="bg-scene" aria-hidden="true"></div>
-  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true">
+    <div class="bg-grid-align"></div>
+  </div>
 
   <div class="page-wrap">
     <header class="header">
       <div class="header-inner">
-        <a class="logo" href="https://www.blazeo.com/" target="_blank" rel="noopener">
-          <img src="https://www.blazeo.com/wp-content/uploads/2024/05/logo-blazeo.svg" alt="Blazeo" />
-        </a>
-        <span class="header-badge">Live Demo</span>
+        <div class="header-column logo-column">
+          <a class="logo" href="https://www.blazeo.com/" target="_blank" rel="noopener">
+            <img src="https://www.blazeo.com/wp-content/uploads/2024/05/logo-blazeo.svg" alt="Blazeo" />
+          </a>
+        </div>
+        <div class="header-column badge-column">
+          <span class="header-badge">Live Demo</span>
+        </div>
       </div>
     </header>
 
@@ -589,27 +764,33 @@
             </div>
           </div>
 
-          <div class="widget-toolbar">
-            <span>AI Chatbot</span>
-            <button class="btn-start-over" data-target="ai" type="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-              </svg>
-              Start Over
-            </button>
-          </div>
+          <div class="widget-stage">
+            <div class="widget-toolbar">
+              <span class="widget-toolbar-label widget-toolbar-label-default">AI Chatbot Demo</span>
+              <span class="demo-card-tag widget-toolbar-label-stuck">AI Chatbot Demo</span>
+              <span class="start-over-wrap">
+                <button class="btn-start-over" data-target="ai" type="button" aria-describedby="ai-start-over-tooltip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                  Start Over
+                </button>
+                <span class="start-over-tooltip" id="ai-start-over-tooltip" role="tooltip">Click here to restart the chat demo</span>
+              </span>
+            </div>
 
-          <div class="widget-frame-wrap">
-            <div class="widget-loading" id="ai-loading">Restarting chat…</div>
-            <div class="widget-frame-scaler" data-widget="ai">
-              <iframe
-                id="ai-widget"
-                class="widget-frame"
-                src="widgets/ai.html"
-                title="AI Chatbot Demo"
-                loading="lazy"
-              ></iframe>
+            <div class="widget-frame-wrap">
+              <div class="widget-loading" id="ai-loading">Restarting chat…</div>
+              <div class="widget-frame-scaler" data-widget="ai">
+                <iframe
+                  id="ai-widget"
+                  class="widget-frame"
+                  src="widgets/ai.html"
+                  title="AI Chatbot Demo"
+                  loading="lazy"
+                ></iframe>
+              </div>
             </div>
           </div>
         </article>
@@ -652,44 +833,44 @@
             </div>
           </div>
 
-          <div class="widget-toolbar">
-            <span>Virtual Assistant</span>
-            <button class="btn-start-over" data-target="va" type="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-              </svg>
-              Start Over
-            </button>
-          </div>
+          <div class="widget-stage">
+            <div class="widget-toolbar">
+              <span class="widget-toolbar-label widget-toolbar-label-default">Virtual Assistant Demo</span>
+              <span class="demo-card-tag widget-toolbar-label-stuck">Virtual Assistant Demo</span>
+              <span class="start-over-wrap">
+                <button class="btn-start-over" data-target="va" type="button" aria-describedby="va-start-over-tooltip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                  Start Over
+                </button>
+                <span class="start-over-tooltip" id="va-start-over-tooltip" role="tooltip">Click here to restart the chat demo</span>
+              </span>
+            </div>
 
-          <div class="widget-frame-wrap">
-            <div class="widget-loading" id="va-loading">Restarting chat…</div>
-            <div class="widget-frame-scaler" data-widget="va">
-              <iframe
-                id="va-widget"
-                class="widget-frame"
-                src="widgets/va.html"
-                title="Virtual Assistant Demo"
-                loading="lazy"
-              ></iframe>
+            <div class="widget-frame-wrap">
+              <div class="widget-loading" id="va-loading">Restarting chat…</div>
+              <div class="widget-frame-scaler" data-widget="va">
+                <iframe
+                  id="va-widget"
+                  class="widget-frame"
+                  src="widgets/va.html"
+                  title="Virtual Assistant Demo"
+                  loading="lazy"
+                ></iframe>
+              </div>
             </div>
           </div>
         </article>
       </div>
     </section>
-
-    <footer class="footer">
-      <p>
-        Powered by <a href="https://www.blazeo.com/managed-live-chat/" target="_blank" rel="noopener">Blazeo Managed Live Chat</a>
-        - AI Chatbots + Human Agents. All Digital Channels.
-      </p>
-    </footer>
   </div>
 
   <script>
     (function () {
-      var WIDGET_HEIGHT = 700;
+      var MIN_WIDGET_HEIGHT = 420;
+      var widgetHeight = 760;
 
       var WIDGETS = {
         ai: {
@@ -706,7 +887,47 @@
         }
       };
 
+      function getMaxWidgetHeight() {
+        return Math.min(840, Math.floor(window.innerHeight * 0.8));
+      }
+
+      function syncHeaderHeight() {
+        var header = document.querySelector('.header');
+        if (header) {
+          document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
+        }
+      }
+
+      function isWidgetStageStuck() {
+        return document.querySelector('.widget-stage.is-stuck') !== null;
+      }
+
+      function calculateWidgetHeight() {
+        var header = document.querySelector('.header');
+        var toolbar = document.querySelector('.widget-toolbar');
+
+        if (!toolbar) return getMaxWidgetHeight();
+
+        var headerHeight = header ? header.getBoundingClientRect().height : 0;
+        var toolbarHeight = toolbar.offsetHeight;
+        var available = window.innerHeight - headerHeight - toolbarHeight;
+
+        if (isWidgetStageStuck()) {
+          return Math.max(MIN_WIDGET_HEIGHT, available);
+        }
+
+        var buffer = 8;
+        var maxHeight = getMaxWidgetHeight();
+
+        return Math.max(MIN_WIDGET_HEIGHT, Math.min(maxHeight, available - buffer));
+      }
+
       function scaleWidgets() {
+        syncHeaderHeight();
+        var stuck = isWidgetStageStuck();
+        widgetHeight = calculateWidgetHeight();
+        document.documentElement.style.setProperty('--widget-height', widgetHeight + 'px');
+
         Object.keys(WIDGETS).forEach(function (key) {
           var widget = WIDGETS[key];
           var scaler = widget.scaler;
@@ -717,25 +938,62 @@
           if (!availableWidth) return;
 
           iframe.style.width = availableWidth + 'px';
-          scaler.style.height = WIDGET_HEIGHT + 'px';
-          scaler.parentElement.style.minHeight = WIDGET_HEIGHT + 'px';
+          scaler.parentElement.style.minHeight = stuck ? '0' : widgetHeight + 'px';
+
+          if (stuck) {
+            scaler.style.height = '100%';
+            iframe.style.height = '100%';
+          } else {
+            iframe.style.height = widgetHeight + 'px';
+            scaler.style.height = widgetHeight + 'px';
+          }
 
           try {
             var doc = iframe.contentDocument;
             if (doc && doc.documentElement) {
               doc.documentElement.style.width = availableWidth + 'px';
-              doc.documentElement.style.minWidth = availableWidth + 'px';
+              doc.documentElement.style.minWidth = '0';
+              doc.documentElement.style.maxWidth = availableWidth + 'px';
               doc.body.style.width = availableWidth + 'px';
-              doc.body.style.minWidth = availableWidth + 'px';
+              doc.body.style.minWidth = '0';
+              doc.body.style.maxWidth = availableWidth + 'px';
             }
           } catch (e) {}
 
           iframe.style.transform = 'none';
 
+          var layoutHeight = stuck ? (iframe.clientHeight || widgetHeight) : widgetHeight;
+
           try {
-            iframe.contentWindow.postMessage({ type: 'blazeo-layout-resize' }, '*');
+            iframe.contentWindow.postMessage({
+              type: 'blazeo-layout-resize',
+              width: availableWidth,
+              height: layoutHeight
+            }, '*');
           } catch (e) {}
         });
+
+        if (stuck) {
+          requestAnimationFrame(function () {
+            Object.keys(WIDGETS).forEach(function (key) {
+              var widget = WIDGETS[key];
+              var iframe = widget.iframe;
+              var scaler = widget.scaler;
+              if (!iframe || !scaler) return;
+
+              var availableWidth = scaler.clientWidth;
+              if (!availableWidth) return;
+
+              try {
+                iframe.contentWindow.postMessage({
+                  type: 'blazeo-layout-resize',
+                  width: availableWidth,
+                  height: iframe.clientHeight || widgetHeight
+                }, '*');
+              } catch (e) {}
+            });
+          });
+        }
       }
 
       var COOKIE_NAMES = [
@@ -803,21 +1061,9 @@
       document.querySelectorAll('.btn-start-over').forEach(function (btn) {
         btn.addEventListener('click', function () {
           startOver(btn.getAttribute('data-target'));
+          btn.blur();
         });
       });
-
-      Object.keys(WIDGETS).forEach(function (key) {
-        var widget = WIDGETS[key];
-        widget.iframe.addEventListener('load', function () {
-          widget.loading.classList.remove('visible');
-          scaleWidgets();
-        });
-      });
-
-      scaleWidgets();
-      window.addEventListener('resize', scaleWidgets);
-      equalizeInfoBlocks();
-      window.addEventListener('resize', equalizeInfoBlocks);
 
       function equalizeInfoBlocks() {
         var blocks = document.querySelectorAll('.info-block');
@@ -832,9 +1078,168 @@
           maxHeight = Math.max(maxHeight, block.offsetHeight);
         });
 
+        var heightCap = Math.max(280, Math.min(400, Math.floor(window.innerHeight * 0.34)));
+
         blocks.forEach(function (block) {
-          block.style.minHeight = maxHeight + 'px';
+          block.style.minHeight = Math.min(maxHeight, heightCap) + 'px';
         });
+      }
+
+      var SCROLL_UP_RELEASE = 200;
+      var SCROLL_DOWN_RELEASE = 100;
+      var STICKY_MIN_WIDTH = 1201;
+
+      function isStickyEnabled() {
+        return window.matchMedia('(min-width: ' + STICKY_MIN_WIDTH + 'px)').matches;
+      }
+
+      function releaseStickyStage(stage, spacer) {
+        if (!stage || !spacer) return;
+
+        spacer.style.display = 'none';
+        spacer.style.height = '0';
+        stage.classList.remove('is-stuck');
+        stage.style.top = '';
+        stage.style.left = '';
+        stage.style.width = '';
+        stage.style.height = '';
+        stage.style.zIndex = '';
+        stage._stickScrollY = null;
+      }
+
+      function initStickyStages() {
+        var header = document.querySelector('.header');
+        var stages = Array.from(document.querySelectorAll('.widget-stage'));
+        var wasStuck = false;
+        var stickyScrollZone = SCROLL_UP_RELEASE + SCROLL_DOWN_RELEASE;
+
+        stages.forEach(function (stage) {
+          if (stage._spacer) return;
+
+          var existingSpacer = stage.previousElementSibling;
+          if (existingSpacer && existingSpacer.classList.contains('widget-stage-spacer')) {
+            stage._spacer = existingSpacer;
+            return;
+          }
+
+          var spacer = document.createElement('div');
+          spacer.className = 'widget-stage-spacer';
+          spacer.setAttribute('aria-hidden', 'true');
+          stage.parentNode.insertBefore(spacer, stage);
+          stage._spacer = spacer;
+        });
+
+        function updateStickyStages() {
+          syncHeaderHeight();
+
+          if (!isStickyEnabled()) {
+            if (wasStuck) {
+              wasStuck = false;
+              scaleWidgets();
+            }
+
+            stages.forEach(function (stage) {
+              releaseStickyStage(stage, stage._spacer);
+            });
+            return;
+          }
+
+          var headerHeight = header ? header.offsetHeight : 70;
+          var stuckHeight = window.innerHeight - headerHeight;
+          var scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+          var maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+          var isStuck = false;
+
+          stages.forEach(function (stage, index) {
+            var card = stage.closest('.demo-card');
+            var spacer = stage._spacer;
+            if (!card || !spacer) return;
+
+            var cardRect = card.getBoundingClientRect();
+            var infoBlock = card.querySelector('.info-block');
+            var infoTop = infoBlock ? infoBlock.getBoundingClientRect().top : 0;
+            var currentlyStuck = stage.classList.contains('is-stuck');
+            var enterStick = infoTop < headerHeight &&
+              cardRect.bottom > headerHeight &&
+              scrollY < maxScroll - SCROLL_DOWN_RELEASE;
+            var shouldStick = false;
+
+            if (currentlyStuck) {
+              var stickScrollY = typeof stage._stickScrollY === 'number' ? stage._stickScrollY : scrollY;
+              var scrolledUp = scrollY < stickScrollY - SCROLL_UP_RELEASE;
+              var scrolledDown = scrollY > stickScrollY + SCROLL_DOWN_RELEASE;
+              shouldStick = !scrolledUp && !scrolledDown && cardRect.bottom > headerHeight;
+            } else {
+              shouldStick = enterStick;
+            }
+
+            if (shouldStick) {
+              if (!currentlyStuck) {
+                stage._stickScrollY = scrollY;
+              }
+
+              isStuck = true;
+              spacer.style.display = 'block';
+              spacer.style.height = stickyScrollZone + 'px';
+              stage.classList.add('is-stuck');
+              stage.style.top = headerHeight + 'px';
+              stage.style.left = cardRect.left + 'px';
+              stage.style.width = cardRect.width + 'px';
+              stage.style.height = stuckHeight + 'px';
+              stage.style.zIndex = String(30 - index);
+            } else {
+              releaseStickyStage(stage, spacer);
+            }
+          });
+
+          if (isStuck !== wasStuck) {
+            wasStuck = isStuck;
+            scaleWidgets();
+          }
+        }
+
+        var stickyRaf = null;
+        function scheduleStickyUpdate() {
+          if (stickyRaf !== null) return;
+          stickyRaf = requestAnimationFrame(function () {
+            stickyRaf = null;
+            updateStickyStages();
+          });
+        }
+
+        window.addEventListener('scroll', scheduleStickyUpdate, { passive: true, capture: true });
+        document.addEventListener('scroll', scheduleStickyUpdate, { passive: true, capture: true });
+        window.addEventListener('resize', scheduleStickyUpdate, { passive: true });
+
+        return updateStickyStages;
+      }
+
+      var updateStickyStages = initStickyStages();
+
+      function refreshLayout() {
+        equalizeInfoBlocks();
+        syncHeaderHeight();
+        updateStickyStages();
+        scaleWidgets();
+      }
+
+      Object.keys(WIDGETS).forEach(function (key) {
+        var widget = WIDGETS[key];
+        widget.iframe.addEventListener('load', function () {
+          widget.loading.classList.remove('visible');
+          refreshLayout();
+        });
+      });
+
+      refreshLayout();
+      window.addEventListener('resize', refreshLayout);
+
+      var headerEl = document.querySelector('.header');
+      if (headerEl && window.ResizeObserver) {
+        new ResizeObserver(function () {
+          syncHeaderHeight();
+          updateStickyStages();
+        }).observe(headerEl);
       }
     })();
   </script>
