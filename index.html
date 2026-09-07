@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  </script>
   <title>AI Chatbot vs Virtual Assistant Demo | Blazeo</title>
   <link rel="icon" href="favicon/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
@@ -476,6 +482,250 @@
       display: inline-flex;
     }
 
+    .widget-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .btn-try-scenarios {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--blazeo-purple);
+      background: rgba(60, 40, 132, 0.08);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-try-scenarios:hover {
+      background: rgba(60, 40, 132, 0.14);
+      border-color: rgba(60, 40, 132, 0.22);
+    }
+
+    .try-scenarios-wrap.is-hidden {
+      display: none;
+    }
+
+    .try-scenarios-dialog {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .try-scenarios-dialog[hidden] {
+      display: none;
+    }
+
+    body.try-scenarios-dialog-open {
+      overflow: hidden;
+    }
+
+    .try-scenarios-dialog-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(24, 28, 57, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .try-scenarios-dialog-panel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 540px;
+      max-height: min(85vh, 720px);
+      display: flex;
+      flex-direction: column;
+      background: var(--blazeo-white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .try-scenarios-dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .try-scenarios-dialog-header h2 {
+      font-family: 'Space Grotesk', Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--blazeo-dark);
+      line-height: 1.3;
+    }
+
+    .try-scenarios-dialog-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--blazeo-gray);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .try-scenarios-dialog-close:hover {
+      background: var(--blazeo-bg);
+      color: var(--blazeo-dark);
+    }
+
+    .try-scenarios-dialog-intro {
+      padding: 14px 20px 0;
+      font-size: 13px;
+      color: var(--blazeo-gray);
+      line-height: 1.6;
+      flex-shrink: 0;
+    }
+
+    .try-scenarios-dialog-body {
+      padding: 16px 20px 20px;
+      overflow-y: auto;
+    }
+
+    .try-scenario-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .try-scenario-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--blazeo-white);
+      border: 1px solid var(--border);
+    }
+
+    .try-scenario-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .try-scenario-actions,
+    .try-scenario-step-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .try-scenario-head h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blazeo-dark);
+      line-height: 1.4;
+    }
+
+    .try-scenario-tests {
+      font-size: 13px;
+      color: var(--blazeo-gray);
+      line-height: 1.6;
+      margin-top: 12px;
+      margin-bottom: 0;
+    }
+
+    .try-scenario-tests strong {
+      font-weight: 700;
+      color: var(--blazeo-dark);
+    }
+
+    .try-scenario-sample {
+      font-size: 13px;
+      color: var(--blazeo-dark);
+      line-height: 1.6;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--blazeo-bg);
+      border: 1px solid var(--border);
+    }
+
+    .try-scenario-steps {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .try-scenario-step {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--blazeo-bg);
+      border: 1px solid var(--border);
+    }
+
+    .try-scenario-step-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--blazeo-dark);
+      line-height: 1.6;
+    }
+
+    .try-scenario-step-num {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--blazeo-purple-light);
+      margin-bottom: 4px;
+    }
+
+    .btn-copy-insert {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--blazeo-purple);
+      background: rgba(60, 40, 132, 0.08);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-copy-insert:hover {
+      background: rgba(60, 40, 132, 0.14);
+      border-color: rgba(60, 40, 132, 0.22);
+    }
+
     .btn-start-over {
       display: inline-flex;
       align-items: center;
@@ -551,6 +801,24 @@
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
+    }
+
+    .try-scenarios-wrap.is-intro-tooltip .start-over-tooltip {
+      animation: try-scenarios-intro-tooltip 5s ease forwards;
+    }
+
+    @keyframes try-scenarios-intro-tooltip {
+      0%, 72% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-4px);
+      }
     }
 
     .widget-frame-wrap {
@@ -659,6 +927,21 @@
     }
 
     @media (max-width: 520px) {
+      .widget-toolbar-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .btn-try-scenarios {
+        padding: 7px 12px;
+        font-size: 11px;
+      }
+
+      .try-scenarios-dialog {
+        padding: 16px;
+      }
+
       .widget-frame-wrap {
         overflow: hidden;
       }
@@ -768,16 +1051,22 @@
             <div class="widget-toolbar">
               <span class="widget-toolbar-label widget-toolbar-label-default">AI Chatbot Demo</span>
               <span class="demo-card-tag widget-toolbar-label-stuck">AI Chatbot Demo</span>
-              <span class="start-over-wrap">
-                <button class="btn-start-over" data-target="ai" type="button" aria-describedby="ai-start-over-tooltip">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                    <path d="M3 3v5h5"/>
-                  </svg>
-                  Start Over
-                </button>
-                <span class="start-over-tooltip" id="ai-start-over-tooltip" role="tooltip">Click here to restart the chat demo</span>
-              </span>
+              <div class="widget-toolbar-actions">
+                <span class="start-over-wrap try-scenarios-wrap is-hidden">
+                  <button class="btn-try-scenarios" type="button" aria-haspopup="dialog" aria-controls="try-scenarios-dialog" aria-describedby="try-scenarios-tooltip" hidden>Test Scenarios</button>
+                  <span class="start-over-tooltip" id="try-scenarios-tooltip" role="tooltip">Try these in the chat</span>
+                </span>
+                <span class="start-over-wrap">
+                  <button class="btn-start-over" data-target="ai" type="button" aria-describedby="ai-start-over-tooltip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                      <path d="M3 3v5h5"/>
+                    </svg>
+                    Start Over
+                  </button>
+                  <span class="start-over-tooltip" id="ai-start-over-tooltip" role="tooltip">Click here to restart the chat demo</span>
+                </span>
+              </div>
             </div>
 
             <div class="widget-frame-wrap">
@@ -786,9 +1075,8 @@
                 <iframe
                   id="ai-widget"
                   class="widget-frame"
-                  src="widgets/ai.html"
+                  src="widgets/ai.html?v=2"
                   title="AI Chatbot Demo"
-                  loading="lazy"
                 ></iframe>
               </div>
             </div>
@@ -857,7 +1145,6 @@
                   class="widget-frame"
                   src="widgets/va.html"
                   title="Virtual Assistant Demo"
-                  loading="lazy"
                 ></iframe>
               </div>
             </div>
@@ -865,6 +1152,98 @@
         </article>
       </div>
     </section>
+  </div>
+
+  <div class="try-scenarios-dialog" id="try-scenarios-dialog" role="dialog" aria-modal="true" aria-labelledby="try-scenarios-dialog-title" hidden>
+    <button type="button" class="try-scenarios-dialog-backdrop" data-close-dialog aria-label="Close dialog"></button>
+    <div class="try-scenarios-dialog-panel">
+      <div class="try-scenarios-dialog-header">
+        <h2 id="try-scenarios-dialog-title">Try these in the chat</h2>
+        <button type="button" class="try-scenarios-dialog-close" data-close-dialog aria-label="Close">&times;</button>
+      </div>
+      <p class="try-scenarios-dialog-intro">Click Copy/Insert to add the message to the chat. Use Start Over between scenarios.</p>
+      <div class="try-scenarios-dialog-body">
+        <div class="try-scenario-list">
+          <div class="try-scenario-item">
+            <div class="try-scenario-head">
+              <h4>1. Give everything at once</h4>
+              <div class="try-scenario-actions">
+                <button type="button" class="btn-copy-insert" data-copy="My name is David Smith. I was in a car accident in California on August 8, 2026. The other driver ran a red light and hit me. I broke my leg and I'm still in the hospital. My email is david@example.com and my number is 555-123-4567.">Copy/Insert</button>
+              </div>
+            </div>
+            <p class="try-scenario-sample">"My name is David Smith. I was in a car accident in California on August 8, 2026. The other driver ran a red light and hit me. I broke my leg and I'm still in the hospital. My email is david@example.com and my number is 555-123-4567."</p>
+            <p class="try-scenario-tests"><strong>Tests:</strong> Full lead intake, case type identification, extracting multiple details, and handling contact information.</p>
+          </div>
+
+          <div class="try-scenario-item">
+            <div class="try-scenario-head">
+              <h4>2. Start with very little information</h4>
+              <div class="try-scenario-actions">
+                <button type="button" class="btn-copy-insert" data-copy="I got hurt at work last week and I think I need a lawyer.">Copy/Insert</button>
+              </div>
+            </div>
+            <p class="try-scenario-sample">"I got hurt at work last week and I think I need a lawyer."</p>
+            <p class="try-scenario-tests"><strong>Tests:</strong> Whether the bot asks the right follow-up questions instead of assuming details.</p>
+          </div>
+
+          <div class="try-scenario-item">
+            <div class="try-scenario-head">
+              <h4>3. Add details across multiple messages</h4>
+            </div>
+            <ol class="try-scenario-steps">
+              <li class="try-scenario-step">
+                <span class="try-scenario-step-text">
+                  <span class="try-scenario-step-num">Message 1</span>
+                  "I slipped at a grocery store."
+                </span>
+                <div class="try-scenario-step-actions">
+                  <button type="button" class="btn-copy-insert" data-copy="I slipped at a grocery store.">Copy/Insert</button>
+                </div>
+              </li>
+              <li class="try-scenario-step">
+                <span class="try-scenario-step-text">
+                  <span class="try-scenario-step-num">Message 2</span>
+                  "It happened in California on August 8."
+                </span>
+                <div class="try-scenario-step-actions">
+                  <button type="button" class="btn-copy-insert" data-copy="It happened in California on August 8.">Copy/Insert</button>
+                </div>
+              </li>
+              <li class="try-scenario-step">
+                <span class="try-scenario-step-text">
+                  <span class="try-scenario-step-num">Message 3</span>
+                  "There was liquid on the floor and no warning sign."
+                </span>
+                <div class="try-scenario-step-actions">
+                  <button type="button" class="btn-copy-insert" data-copy="There was liquid on the floor and no warning sign.">Copy/Insert</button>
+                </div>
+              </li>
+              <li class="try-scenario-step">
+                <span class="try-scenario-step-text">
+                  <span class="try-scenario-step-num">Message 4</span>
+                  "I broke my ankle and had surgery."
+                </span>
+                <div class="try-scenario-step-actions">
+                  <button type="button" class="btn-copy-insert" data-copy="I broke my ankle and had surgery.">Copy/Insert</button>
+                </div>
+              </li>
+            </ol>
+            <p class="try-scenario-tests"><strong>Tests:</strong> Conversation memory and whether the bot builds the case as information is provided.</p>
+          </div>
+
+          <div class="try-scenario-item">
+            <div class="try-scenario-head">
+              <h4>4. Test a complex Workers' Comp case</h4>
+              <div class="try-scenario-actions">
+                <button type="button" class="btn-copy-insert" data-copy="I injured my back lifting equipment at work in California on August 8. I told my supervisor that day but kept working. A week later the pain got worse and I had to stop working. My employer says I should have reported it sooner.">Copy/Insert</button>
+              </div>
+            </div>
+            <p class="try-scenario-sample">"I injured my back lifting equipment at work in California on August 8. I told my supervisor that day but kept working. A week later the pain got worse and I had to stop working. My employer says I should have reported it sooner."</p>
+            <p class="try-scenario-tests"><strong>Tests:</strong> Workers' Comp identification, timeline extraction, and handling a more complicated scenario.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -877,7 +1256,7 @@
           iframe: document.getElementById('ai-widget'),
           loading: document.getElementById('ai-loading'),
           scaler: document.querySelector('[data-widget="ai"]'),
-          src: 'widgets/ai.html'
+          src: 'widgets/ai.html?v=2'
         },
         va: {
           iframe: document.getElementById('va-widget'),
@@ -1056,12 +1435,312 @@
         } catch (e) {}
 
         widget.iframe.src = widget.src + '?reset=' + Date.now();
+
+        if (target === 'ai') {
+          tryScenariosUnlocked = false;
+          clearTryScenariosIntroTooltip();
+          if (tryScenariosDialog && !tryScenariosDialog.hidden) {
+            closeTryScenariosDialog(false);
+          }
+          updateTryScenariosButton();
+        }
       }
 
       document.querySelectorAll('.btn-start-over').forEach(function (btn) {
         btn.addEventListener('click', function () {
           startOver(btn.getAttribute('data-target'));
           btn.blur();
+        });
+      });
+
+      var tryScenariosDialog = document.getElementById('try-scenarios-dialog');
+      var tryScenariosWrap = document.querySelector('.try-scenarios-wrap');
+      var tryScenariosOpenBtn = document.querySelector('.btn-try-scenarios');
+      var tryScenariosUnlocked = false;
+      var tryScenariosIntroTooltipTimer = null;
+
+      function clearTryScenariosIntroTooltip() {
+        if (tryScenariosIntroTooltipTimer) {
+          clearTimeout(tryScenariosIntroTooltipTimer);
+          tryScenariosIntroTooltipTimer = null;
+        }
+
+        if (tryScenariosWrap) {
+          tryScenariosWrap.classList.remove('is-intro-tooltip');
+        }
+      }
+
+      function showTryScenariosIntroTooltip() {
+        if (!tryScenariosWrap) return;
+
+        clearTryScenariosIntroTooltip();
+        tryScenariosWrap.classList.add('is-intro-tooltip');
+
+        tryScenariosIntroTooltipTimer = setTimeout(function () {
+          tryScenariosWrap.classList.remove('is-intro-tooltip');
+          tryScenariosIntroTooltipTimer = null;
+        }, 5000);
+      }
+
+      function isAiChatMessageInputReady() {
+        var iframe = document.getElementById('ai-widget');
+        if (!iframe || !iframe.contentDocument) return false;
+
+        try {
+          var rootDoc = iframe.contentDocument;
+          var chatWrapper = rootDoc.getElementById('apexchat_dompopup_chatwindow_wrapper');
+          if (!chatWrapper || chatWrapper.offsetWidth === 0 || chatWrapper.offsetHeight === 0) {
+            return false;
+          }
+
+          var chatFrame = rootDoc.getElementById('apexchat_dompopup_chatwindow_frame');
+          if (!chatFrame || !chatFrame.contentDocument) return false;
+
+          var input = chatFrame.contentDocument.getElementById('apexchat_rd_msg_box');
+          if (!input || input.disabled || input.readOnly) return false;
+          if (input.offsetWidth === 0 || input.offsetHeight === 0) return false;
+
+          var placeholder = (input.placeholder || '').toLowerCase();
+          return placeholder.indexOf('type your message') !== -1;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function updateTryScenariosButton() {
+        if (!tryScenariosWrap || !tryScenariosOpenBtn) return;
+
+        var wasUnlocked = tryScenariosUnlocked;
+
+        if (isAiChatMessageInputReady()) {
+          tryScenariosUnlocked = true;
+        }
+
+        tryScenariosWrap.classList.toggle('is-hidden', !tryScenariosUnlocked);
+        tryScenariosOpenBtn.hidden = !tryScenariosUnlocked;
+
+        if (tryScenariosUnlocked && !wasUnlocked) {
+          showTryScenariosIntroTooltip();
+        }
+      }
+
+      function openTryScenariosDialog() {
+        if (!tryScenariosDialog || !tryScenariosUnlocked) return;
+        tryScenariosDialog.hidden = false;
+        document.body.classList.add('try-scenarios-dialog-open');
+        var closeBtn = tryScenariosDialog.querySelector('.try-scenarios-dialog-close');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeTryScenariosDialog(returnFocus) {
+        if (!tryScenariosDialog) return;
+        tryScenariosDialog.hidden = true;
+        document.body.classList.remove('try-scenarios-dialog-open');
+
+        if (returnFocus && tryScenariosOpenBtn) {
+          tryScenariosOpenBtn.focus();
+          return;
+        }
+
+        if (tryScenariosOpenBtn) {
+          tryScenariosOpenBtn.blur();
+        }
+      }
+
+      if (tryScenariosOpenBtn) {
+        tryScenariosOpenBtn.addEventListener('click', function () {
+          if (!tryScenariosUnlocked) return;
+          openTryScenariosDialog();
+          tryScenariosOpenBtn.blur();
+        });
+      }
+
+      if (tryScenariosDialog) {
+        tryScenariosDialog.querySelectorAll('[data-close-dialog]').forEach(function (el) {
+          el.addEventListener('click', function () {
+            closeTryScenariosDialog(true);
+          });
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !tryScenariosDialog.hidden) {
+            closeTryScenariosDialog(true);
+          }
+        });
+      }
+
+      function fallbackCopy(text) {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
+        document.body.removeChild(textarea);
+      }
+
+      function copySampleText(text) {
+        if (!text) return;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(function () {
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function findAiChatInput() {
+        var iframe = document.getElementById('ai-widget');
+        if (!iframe || !iframe.contentWindow) return null;
+
+        function isMessageInput(el) {
+          if (!el || el.disabled || el.readOnly) return false;
+          return el.tagName === 'TEXTAREA' ||
+            (el.tagName === 'INPUT' && (!el.type || el.type === 'text' || el.type === 'search'));
+        }
+
+        function scoreInput(el) {
+          var placeholder = (el.placeholder || '').toLowerCase();
+          var score = 0;
+
+          if (el.id === 'apexchat_rd_msg_box') score += 100;
+          if (el.classList && el.classList.contains('livechat_typing_textarea')) score += 50;
+          if (placeholder.indexOf('type your message') !== -1) score += 40;
+          if (el.offsetWidth > 0 && el.offsetHeight > 0) score += 30;
+
+          return score;
+        }
+
+        function findInWindow(win, depth) {
+          if (!win || depth > 8) return null;
+
+          var best = null;
+          var bestScore = -1;
+
+          try {
+            var doc = win.document;
+            var candidates = doc.querySelectorAll(
+              '#apexchat_rd_msg_box, textarea.livechat_typing_textarea, textarea, input[type="text"]'
+            );
+
+            for (var i = 0; i < candidates.length; i++) {
+              var el = candidates[i];
+              if (!isMessageInput(el)) continue;
+
+              var score = scoreInput(el);
+              if (score > bestScore) {
+                bestScore = score;
+                best = el;
+              }
+            }
+
+            if (bestScore >= 100) return best;
+
+            var iframes = doc.querySelectorAll('iframe');
+            for (var j = 0; j < iframes.length; j++) {
+              try {
+                var inner = findInWindow(iframes[j].contentWindow, depth + 1);
+                if (inner) return inner;
+              } catch (e) {}
+            }
+
+            return best;
+          } catch (e) {}
+
+          return null;
+        }
+
+        return findInWindow(iframe.contentWindow, 0);
+      }
+
+      function setAiChatInputValue(el, value) {
+        if (!el || !value) return false;
+
+        var view = el.ownerDocument.defaultView;
+        var doc = el.ownerDocument;
+        var inserted = false;
+
+        el.focus();
+
+        try {
+          el.select();
+        } catch (e) {}
+
+        try {
+          if (doc.execCommand) {
+            try {
+              doc.execCommand('selectAll', false, null);
+            } catch (e2) {}
+
+            inserted = doc.execCommand('insertText', false, value);
+          }
+        } catch (e) {}
+
+        if (!inserted || el.value !== value) {
+          var proto = el.tagName === 'TEXTAREA'
+            ? view.HTMLTextAreaElement.prototype
+            : view.HTMLInputElement.prototype;
+          var setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+          setter.call(el, value);
+        }
+
+        el.dispatchEvent(new view.Event('input', { bubbles: true }));
+        el.dispatchEvent(new view.Event('change', { bubbles: true }));
+
+        try {
+          el.dispatchEvent(new view.InputEvent('input', {
+            bubbles: true,
+            data: value,
+            inputType: 'insertText'
+          }));
+        } catch (e) {}
+
+        el.dispatchEvent(new view.KeyboardEvent('keyup', { bubbles: true, key: 'Unidentified' }));
+
+        if (typeof el.setSelectionRange === 'function') {
+          var length = el.value.length;
+          el.setSelectionRange(length, length);
+        }
+
+        el.focus();
+        return el.value === value;
+      }
+
+      function insertIntoAiChat(text) {
+        if (!text) return false;
+
+        var input = findAiChatInput();
+        if (input && setAiChatInputValue(input, text)) {
+          return true;
+        }
+
+        var iframe = document.getElementById('ai-widget');
+        if (iframe && iframe.contentWindow) {
+          try {
+            iframe.contentWindow.postMessage({ type: 'blazeo-chat-insert', text: text }, '*');
+          } catch (e) {}
+        }
+
+        return false;
+      }
+
+      function copyInsertSample(text) {
+        if (!text) return;
+        copySampleText(text);
+        closeTryScenariosDialog(false);
+        insertIntoAiChat(text);
+      }
+
+      document.querySelectorAll('#try-scenarios-dialog .btn-copy-insert').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var text = btn.getAttribute('data-copy');
+          copyInsertSample(text);
         });
       });
 
@@ -1221,6 +1900,7 @@
         syncHeaderHeight();
         updateStickyStages();
         scaleWidgets();
+        updateTryScenariosButton();
       }
 
       Object.keys(WIDGETS).forEach(function (key) {
@@ -1232,6 +1912,12 @@
       });
 
       refreshLayout();
+      updateTryScenariosButton();
+      setInterval(updateTryScenariosButton, 800);
+      window.scrollTo(0, 0);
+      window.addEventListener('pageshow', function () {
+        window.scrollTo(0, 0);
+      });
       window.addEventListener('resize', refreshLayout);
 
       var headerEl = document.querySelector('.header');
